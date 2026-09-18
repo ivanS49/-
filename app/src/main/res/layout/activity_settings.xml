@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground">
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_title"
+            android:textSize="24sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"/>
+
+        <Switch
+            android:id="@+id/switchScreenshots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_block_screenshots"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <Switch
+            android:id="@+id/switchWebRtc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_webrtc"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <Switch
+            android:id="@+id/switchRfp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_rfp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <Switch
+            android:id="@+id/switchReferrer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_referrer"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <Switch
+            android:id="@+id/switchSlow3g"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_slow_3g"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editSlow3gDelay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:padding="12dp"
+            android:hint="@string/settings_delay_hint"
+            android:textColorHint="?android:attr/textColorTertiary"
+            android:inputType="number"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone"/>
+
+        <!-- Network Settings -->
+        <Switch
+            android:id="@+id/switchDoh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_doh"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+            
+        <Spinner
+            android:id="@+id/spinnerDoh"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editCustomDoh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:padding="12dp"
+            android:hint="@string/settings_custom_doh"
+            android:textColorHint="?android:attr/textColorTertiary"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_lang"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+            
+        <Spinner
+            android:id="@+id/spinnerLang"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_ua"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerUa"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"/>
+            
+        <Switch
+            android:id="@+id/switchEmulateScreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_emulate_screen"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+            
+        <Spinner
+            android:id="@+id/spinnerResolution"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone"/>
+
+        <!-- LLM Settings -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/llm_settings_title"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnOpenLlmSettings"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="@string/settings_llm_button"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2E7D32"
+            android:layout_marginBottom="24dp"/>
+
+                <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_userscript"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editUserscript"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity="top|start"
+            android:textColor="?android:attr/textColorPrimary"
+            android:padding="12dp"
+            android:hint="@string/settings_userscript_hint"
+            android:textColorHint="?android:attr/textColorTertiary"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Danger Zone -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_danger_zone"
+            android:textColor="#D32F2F"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+            
+        <EditText
+            android:id="@+id/editRealKey"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:padding="12dp"
+            android:hint="@string/settings_real_key"
+            android:textColorHint="?android:attr/textColorTertiary"
+            android:inputType="numberPassword"
+            android:layout_marginBottom="16dp"/>
+            
+        <EditText
+            android:id="@+id/editFakeKey"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:padding="12dp"
+            android:hint="@string/settings_fake_key"
+            android:textColorHint="?android:attr/textColorTertiary"
+            android:inputType="numberPassword"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="@string/settings_save"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+</ScrollView>
+

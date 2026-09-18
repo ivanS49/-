@@ -1,0 +1,24 @@
+﻿*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+
+# Temp scripts / dumps / binaries
+jdk-17
+jdk-17.zip
+build_log.txt
+cfr-0.152.jar
+deps.txt
+temp_aar
+metadata.xml
+null
+TestLlama.java
+scaffold.py

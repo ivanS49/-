@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background-color: #121212; color: #ffffff; margin: 0; padding: 20px; }
+        h1, h2 { text-align: center; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .list-group { list-style: none; padding: 0; }
+        .list-item { background-color: #1e1e1e; margin-bottom: 10px; padding: 15px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background-color 0.2s; }
+        .list-item:active { background-color: #333; }
+        .hidden { display: none; }
+        .back-btn { background: none; border: none; color: #4CAF50; font-size: 16px; cursor: pointer; padding: 10px 0; margin-bottom: 10px; display: inline-block; }
+        a.news-link { color: #ffffff; text-decoration: none; width: 100%; display: block; }
+        .title { font-weight: bold; font-size: 18px; }
+        .desc { font-size: 14px; color: #aaa; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>LLM</h1>
+    
+    <div id="continents-view">
+        <h2 id="ui-search">Поисковые системы</h2>
+        <ul class="list-group" id="search-list"></ul>
+
+        <br><hr style="border-color: #333;"><br>
+        <h2 id="ui-choose-continent">Выберите регион</h2>
+        <ul class="list-group" id="continents-list"></ul>
+    </div>
+    
+    <div id="countries-view" class="hidden">
+        <button class="back-btn" onclick="showContinents()" id="ui-back-continents">← Назад</button>
+        <h2 id="country-title">Страна</h2>
+        <ul class="list-group" id="countries-list"></ul>
+    </div>
+    
+    <div id="news-view" class="hidden">
+        <button class="back-btn" onclick="showCountries()" id="ui-back-countries">← Назад</button>
+        <h2 id="news-title">Медиа</h2>
+        <ul class="list-group" id="news-list"></ul>
+    </div>
+</div>
+
+<script>
+    const searchEngines = [{"name": "SearXNG", "url": "https://searx.be", "descKey": "descSearx"}, {"name": "DuckDuckGo", "url": "https://duckduckgo.com", "descKey": "descDdg"}, {"name": "Brave Search", "url": "https://search.brave.com", "descKey": "descBrave"}, {"name": "Startpage", "url": "https://startpage.com", "descKey": "descStartpage"}, {"name": "Qwant", "url": "https://qwant.com", "descKey": "descQwant"}, {"name": "Mojeek", "url": "https://mojeek.com", "descKey": "descMojeek"}, {"name": "Google", "url": "https://google.com", "descKey": "descGoogle"}, {"name": "Yandex", "url": "https://ya.ru", "descKey": "descYandex"}];
+    const data = {"Europe": {"Russia": [{"name": "Meduza", "url": "https://meduza.io", "descKey": "descNewsRu1"}, {"name": "Mediazona", "url": "https://zona.media", "descKey": "descNewsRu2"}, {"name": "The Insider", "url": "https://theins.ru", "descKey": "descNewsRu3"}, {"name": "Novaya Gazeta Europe", "url": "https://novayagazeta.eu", "descKey": "descNewsRu4"}, {"name": "TV Rain", "url": "https://tvrain.tv", "descKey": "descNewsRu5"}, {"name": "Radio Liberty", "url": "https://svoboda.org", "descKey": "descNewsRu6"}, {"name": "Kholod", "url": "https://holod.media", "descKey": "descNewsRu7"}, {"name": "OVD-Info", "url": "https://ovdinfo.org", "descKey": "descNewsRu8"}, {"name": "Important Stories", "url": "https://istories.media", "descKey": "descNewsRu9"}, {"name": "Proekt", "url": "https://proekt.media", "descKey": "descNewsRu10"}], "Belarus": [{"name": "Zerkalo", "url": "https://zerkalo.io", "descKey": "descNewsBy1"}, {"name": "Nasha Niva", "url": "https://nashaniva.com", "descKey": "descNewsBy2"}, {"name": "Belsat", "url": "https://belsat.eu", "descKey": "descNewsBy3"}, {"name": "Euroradio", "url": "https://euroradio.fm", "descKey": "descNewsBy4"}, {"name": "Charter'97", "url": "https://charter97.org", "descKey": "descNewsBy5"}], "Ukraine": [{"name": "Ukrainska Pravda", "url": "https://pravda.com.ua", "descKey": "descNewsUa1"}, {"name": "Hromadske", "url": "https://hromadske.ua", "descKey": "descNewsUa2"}, {"name": "The Kyiv Independent", "url": "https://kyivindependent.com", "descKey": "descNewsUa3"}, {"name": "Suspilne", "url": "https://suspilne.media", "descKey": "descNewsUa4"}], "Germany": [{"name": "Deutsche Welle", "url": "https://dw.com", "descKey": "descNewsDe1"}, {"name": "Der Spiegel", "url": "https://spiegel.de", "descKey": "descNewsDe2"}], "France": [{"name": "Le Monde", "url": "https://lemonde.fr", "descKey": "descNewsFr1"}, {"name": "Mediapart", "url": "https://mediapart.fr", "descKey": "descNewsFr2"}], "UK": [{"name": "The Guardian", "url": "https://theguardian.com", "descKey": "descNewsUk1"}, {"name": "BBC News", "url": "https://bbc.com/news", "descKey": "descNewsUk2"}, {"name": "Reuters", "url": "https://reuters.com", "descKey": "descNewsUk3"}]}, "America": {"USA": [{"name": "ProPublica", "url": "https://propublica.org", "descKey": "descNewsUs1"}, {"name": "The Intercept", "url": "https://theintercept.com", "descKey": "descNewsUs2"}, {"name": "NPR", "url": "https://npr.org", "descKey": "descNewsUs3"}, {"name": "Washington Post", "url": "https://washingtonpost.com", "descKey": "descNewsUs4"}, {"name": "AP News", "url": "https://apnews.com", "descKey": "descNewsUs5"}]}, "Asia": {"China / HK": [{"name": "SCMP", "url": "https://scmp.com", "descKey": "descNewsCn1"}, {"name": "HKFP", "url": "https://hongkongfp.com", "descKey": "descNewsCn2"}, {"name": "Radio Free Asia", "url": "https://rfa.org", "descKey": "descNewsCn3"}]}, "Middle East": {"Iran": [{"name": "Iran International", "url": "https://iranintl.com", "descKey": "descNewsIr1"}, {"name": "Radio Farda", "url": "https://radiofarda.com", "descKey": "descNewsIr2"}], "Israel": [{"name": "Haaretz", "url": "https://haaretz.com", "descKey": "descNewsIl1"}]}};
+    const langs = {"en": {"chooseCont": "Choose Region", "search": "Search Engines", "backCont": "← Back", "backCoun": "← Back", "addSite": "+ Add custom site", "promptName": "Site name:", "promptUrl": "URL:", "customSiteDesc": "Custom site", "descSearx": "Untracked meta-search", "descDdg": "Private search", "descGoogle": "Standard search", "descBrave": "Independent search index", "descStartpage": "Private Google results", "descQwant": "European private search", "descMojeek": "Independent web crawler", "descYandex": "Russian search (Censored)", "descNewsRu1": "Major independent news", "descNewsRu2": "Justice & rights", "descNewsRu3": "Investigative journalism", "descNewsRu4": "European branch of NG", "descNewsRu5": "Independent TV", "descNewsRu6": "Uncensored news", "descNewsRu7": "Independent magazine", "descNewsRu8": "Human rights media", "descNewsRu9": "Investigative media", "descNewsRu10": "Investigative journalism", "descNewsBy1": "Main news of Belarus", "descNewsBy2": "Oldest independent media", "descNewsBy3": "Independent TV", "descNewsBy4": "News & analytics", "descNewsBy5": "Opposition portal", "descNewsUa1": "Largest online media", "descNewsUa2": "Independent media", "descNewsUa3": "English-language news", "descNewsUa4": "Public broadcasting", "descNewsDe1": "International broadcaster", "descNewsDe2": "Major news magazine", "descNewsFr1": "Main newspaper", "descNewsFr2": "Investigative media", "descNewsUk1": "Independent liberal journalism", "descNewsUk2": "British broadcaster", "descNewsUk3": "International news agency", "descNewsUs1": "Non-profit investigations", "descNewsUs2": "Free journalism", "descNewsUs3": "National public radio", "descNewsUs4": "Major newspaper", "descNewsUs5": "Global news agency", "descNewsCn1": "Hong Kong English newspaper", "descNewsCn2": "Independent media (HK)", "descNewsCn3": "Free news of Asia", "descNewsIr1": "Independent news", "descNewsIr2": "Uncensored news", "descNewsIl1": "Oldest liberal newspaper"}, "ru": {"chooseCont": "Выберите регион", "search": "Поисковые системы", "backCont": "← Назад", "backCoun": "← Назад", "addSite": "+ Добавить свой сайт", "promptName": "Название сайта:", "promptUrl": "Ссылка (URL):", "customSiteDesc": "Пользовательский сайт", "descSearx": "Метапоисковик без слежки", "descDdg": "Приватный поиск", "descGoogle": "Обычный поиск", "descBrave": "Независимый индекс", "descStartpage": "Google без слежки", "descQwant": "Европейский приватный поиск", "descMojeek": "Независимый краулер", "descYandex": "Российский поиск (Цензура)", "descNewsRu1": "Главное независимое издание", "descNewsRu2": "О судах и праве", "descNewsRu3": "Журналистские расследования", "descNewsRu4": "Европейское отделение НГ", "descNewsRu5": "Независимое ТВ", "descNewsRu6": "Новости без цензуры", "descNewsRu7": "Независимый журнал", "descNewsRu8": "Правозащитный проект", "descNewsRu9": "Важные истории", "descNewsRu10": "Проект (Расследования)", "descNewsBy1": "Главные новости", "descNewsBy2": "Старейшее независимое СМИ", "descNewsBy3": "Независимый телеканал", "descNewsBy4": "Новости и аналитика", "descNewsBy5": "Оппозиционный портал", "descNewsUa1": "Крупнейшее онлайн-СМИ", "descNewsUa2": "Независимое медиа", "descNewsUa3": "Англоязычные новости", "descNewsUa4": "Общественное вещание", "descNewsDe1": "Международная ТРК", "descNewsDe2": "Крупнейший журнал", "descNewsFr1": "Главная газета", "descNewsFr2": "СМИ расследований", "descNewsUk1": "Независимая журналистика", "descNewsUk2": "Британская ТРК", "descNewsUk3": "Международное агентство", "descNewsUs1": "Некоммерческие расследования", "descNewsUs2": "Свободная журналистика", "descNewsUs3": "Общественное радио", "descNewsUs4": "Крупнейшая газета", "descNewsUs5": "Мировое агентство", "descNewsCn1": "Гонконгская газета", "descNewsCn2": "Независимое издание (ГК)", "descNewsCn3": "Свободные новости", "descNewsIr1": "Независимые новости", "descNewsIr2": "Новости без цензуры", "descNewsIl1": "Либеральная газета"}, "ar": {"chooseCont": "اختر المنطقة", "search": "محركات البحث", "backCont": "← رجوع", "backCoun": "← رجوع", "addSite": "+ إضافة موقع", "promptName": "اسم الموقع:", "promptUrl": "الرابط:", "customSiteDesc": "موقع مخصص", "descSearx": "بحث وصفي", "descDdg": "بحث خاص", "descGoogle": "بحث قياسي", "descBrave": "فهرس بحث مستقل", "descStartpage": "نتائج خاصة", "descQwant": "بحث أوروبي", "descMojeek": "بحث مستقل", "descYandex": "بحث روسي", "descNewsRu1": "أخبار رئيسية", "descNewsRu2": "عدالة وحقوق", "descNewsRu3": "صحافة استقصائية", "descNewsRu4": "فرع أوروبي", "descNewsRu5": "تلفزيون مستقل", "descNewsRu6": "أخبار بلا رقابة", "descNewsRu7": "مجلة مستقلة", "descNewsRu8": "حقوق الإنسان", "descNewsRu9": "وسائط استقصائية", "descNewsRu10": "صحافة استقصائية", "descNewsBy1": "أخبار رئيسية", "descNewsBy2": "وسائط قديمة", "descNewsBy3": "تلفزيون مستقل", "descNewsBy4": "أخبار وتحليلات", "descNewsBy5": "بوابة معارضة", "descNewsUa1": "وسائط رئيسية", "descNewsUa2": "وسائط مستقلة", "descNewsUa3": "أخبار إنجليزية", "descNewsUa4": "بث عام", "descNewsDe1": "بث دولي", "descNewsDe2": "مجلة رئيسية", "descNewsFr1": "صحيفة رئيسية", "descNewsFr2": "وسائط استقصائية", "descNewsUk1": "صحافة ليبرالية", "descNewsUk2": "بث بريطاني", "descNewsUk3": "وكالة دولية", "descNewsUs1": "تحقيقات مستقلة", "descNewsUs2": "صحافة حرة", "descNewsUs3": "راديو عام", "descNewsUs4": "صحيفة كبرى", "descNewsUs5": "وكالة عالمية", "descNewsCn1": "صحيفة هونغ كونغ", "descNewsCn2": "وسائط مستقلة", "descNewsCn3": "أخبار حرة", "descNewsIr1": "أخبار مستقلة", "descNewsIr2": "أخبار حرة", "descNewsIl1": "صحيفة ليبرالية"}, "zh": {"chooseCont": "选择地区", "search": "搜索引擎", "backCont": "← 返回", "backCoun": "← 返回", "addSite": "+ 添加自定义网站", "promptName": "网站名称:", "promptUrl": "链接:", "customSiteDesc": "自定义网站", "descSearx": "无追踪元搜索", "descDdg": "私人搜索", "descGoogle": "标准搜索", "descBrave": "独立搜索索引", "descStartpage": "私人结果", "descQwant": "欧洲私人搜索", "descMojeek": "独立爬虫", "descYandex": "俄罗斯搜索 (审查)", "descNewsRu1": "主要独立新闻", "descNewsRu2": "司法与权利", "descNewsRu3": "调查新闻", "descNewsRu4": "欧洲分部", "descNewsRu5": "独立电视", "descNewsRu6": "未审查新闻", "descNewsRu7": "独立杂志", "descNewsRu8": "人权媒体", "descNewsRu9": "调查媒体", "descNewsRu10": "调查新闻", "descNewsBy1": "主要新闻", "descNewsBy2": "最老独立媒体", "descNewsBy3": "独立电视", "descNewsBy4": "新闻与分析", "descNewsBy5": "反对派门户", "descNewsUa1": "最大在线媒体", "descNewsUa2": "独立媒体", "descNewsUa3": "英语新闻", "descNewsUa4": "公共广播", "descNewsDe1": "国际广播", "descNewsDe2": "主要新闻杂志", "descNewsFr1": "主要报纸", "descNewsFr2": "调查媒体", "descNewsUk1": "自由主义新闻", "descNewsUk2": "英国广播", "descNewsUk3": "国际通讯社", "descNewsUs1": "非营利调查", "descNewsUs2": "自由新闻", "descNewsUs3": "国家公共广播", "descNewsUs4": "主要报纸", "descNewsUs5": "全球通讯社", "descNewsCn1": "香港英文报纸", "descNewsCn2": "香港独立媒体", "descNewsCn3": "亚洲自由新闻", "descNewsIr1": "独立新闻", "descNewsIr2": "未审查新闻", "descNewsIl1": "历史悠久报纸"}, "de": {"chooseCont": "Region wählen", "search": "Suchmaschinen", "backCont": "← Zurück", "backCoun": "← Zurück", "addSite": "+ Eigene Seite hinzufügen", "promptName": "Seitenname:", "promptUrl": "URL:", "customSiteDesc": "Eigene Seite", "descSearx": "Metasuche ohne Tracking", "descDdg": "Private Suche", "descGoogle": "Standardsuche", "descBrave": "Unabhängiger Suchindex", "descStartpage": "Private Google-Ergebnisse", "descQwant": "Europäische private Suche", "descMojeek": "Unabhängiger Webcrawler", "descYandex": "Russische Suche (Zensiert)", "descNewsRu1": "Unabhängige Hauptnachrichten", "descNewsRu2": "Justiz & Rechte", "descNewsRu3": "Investigativer Journalismus", "descNewsRu4": "Europäischer Zweig", "descNewsRu5": "Unabhängiges TV", "descNewsRu6": "Unzensierte Nachrichten", "descNewsRu7": "Unabhängiges Magazin", "descNewsRu8": "Menschenrechtsmedien", "descNewsRu9": "Investigative Medien", "descNewsRu10": "Investigativer Journalismus", "descNewsBy1": "Hauptnachrichten", "descNewsBy2": "Ältestes unabhängiges Medium", "descNewsBy3": "Unabhängiges TV", "descNewsBy4": "Nachrichten & Analysen", "descNewsBy5": "Oppositionsportal", "descNewsUa1": "Größtes Online-Medium", "descNewsUa2": "Unabhängiges Medium", "descNewsUa3": "Englischsprachige Nachrichten", "descNewsUa4": "Öffentlicher Rundfunk", "descNewsDe1": "Internationaler Sender", "descNewsDe2": "Großes Nachrichtenmagazin", "descNewsFr1": "Hauptzeitung", "descNewsFr2": "Investigative Medien", "descNewsUk1": "Unabhängiger Journalismus", "descNewsUk2": "Britischer Sender", "descNewsUk3": "Internationale Nachrichtenagentur", "descNewsUs1": "Gemeinnützige Ermittlungen", "descNewsUs2": "Freier Journalismus", "descNewsUs3": "Nationales öffentliches Radio", "descNewsUs4": "Hauptzeitung", "descNewsUs5": "Globale Nachrichtenagentur", "descNewsCn1": "Hongkonger Zeitung", "descNewsCn2": "Unabhängige Medien", "descNewsCn3": "Freie Nachrichten", "descNewsIr1": "Unabhängige Nachrichten", "descNewsIr2": "Unzensierte Nachrichten", "descNewsIl1": "Liberale Zeitung"}, "fr": {"chooseCont": "Choisir la région", "search": "Moteurs de recherche", "backCont": "← Retour", "backCoun": "← Retour", "addSite": "+ Ajouter un site", "promptName": "Nom du site:", "promptUrl": "URL:", "customSiteDesc": "Site personnalisé", "descSearx": "Méta-recherche non suivie", "descDdg": "Recherche privée", "descGoogle": "Recherche standard", "descBrave": "Index de recherche indépendant", "descStartpage": "Résultats privés", "descQwant": "Recherche privée européenne", "descMojeek": "Robot indépendant", "descYandex": "Recherche russe (Censurée)", "descNewsRu1": "Principales nouvelles", "descNewsRu2": "Justice & Droits", "descNewsRu3": "Journalisme d'investigation", "descNewsRu4": "Branche européenne", "descNewsRu5": "Télévision indépendante", "descNewsRu6": "Nouvelles non censurées", "descNewsRu7": "Magazine indépendant", "descNewsRu8": "Médias des droits", "descNewsRu9": "Médias d'investigation", "descNewsRu10": "Journalisme d'investigation", "descNewsBy1": "Nouvelles principales", "descNewsBy2": "Plus vieux média indépendant", "descNewsBy3": "TV indépendante", "descNewsBy4": "Nouvelles et analyses", "descNewsBy5": "Portail d'opposition", "descNewsUa1": "Média en ligne principal", "descNewsUa2": "Média indépendant", "descNewsUa3": "Nouvelles en anglais", "descNewsUa4": "Radiodiffusion publique", "descNewsDe1": "Diffuseur international", "descNewsDe2": "Magazine d'information", "descNewsFr1": "Journal principal", "descNewsFr2": "Médias d'investigation", "descNewsUk1": "Journalisme libéral", "descNewsUk2": "Radiodiffuseur britannique", "descNewsUk3": "Agence de presse", "descNewsUs1": "Enquêtes indépendantes", "descNewsUs2": "Journalisme libre", "descNewsUs3": "Radio publique", "descNewsUs4": "Journal majeur", "descNewsUs5": "Agence mondiale", "descNewsCn1": "Journal de Hong Kong", "descNewsCn2": "Médias indépendants", "descNewsCn3": "Nouvelles libres", "descNewsIr1": "Nouvelles indépendantes", "descNewsIr2": "Nouvelles non censurées", "descNewsIl1": "Journal libéral"}, "es": {"chooseCont": "Elegir región", "search": "Motores de búsqueda", "backCont": "← Volver", "backCoun": "← Volver", "addSite": "+ Añadir sitio", "promptName": "Nombre del sitio:", "promptUrl": "URL:", "customSiteDesc": "Sitio personalizado", "descSearx": "Metabúsqueda sin rastreo", "descDdg": "Búsqueda privada", "descGoogle": "Búsqueda estándar", "descBrave": "Índice independiente", "descStartpage": "Resultados privados", "descQwant": "Búsqueda privada europea", "descMojeek": "Rastreador independiente", "descYandex": "Búsqueda rusa (Censurada)", "descNewsRu1": "Noticias principales", "descNewsRu2": "Justicia y derechos", "descNewsRu3": "Periodismo de investigación", "descNewsRu4": "Rama europea", "descNewsRu5": "Televisión independiente", "descNewsRu6": "Noticias sin censura", "descNewsRu7": "Revista independiente", "descNewsRu8": "Medios de derechos", "descNewsRu9": "Medios de investigación", "descNewsRu10": "Periodismo de investigación", "descNewsBy1": "Noticias principales", "descNewsBy2": "Medio independiente más antiguo", "descNewsBy3": "TV independiente", "descNewsBy4": "Noticias y análisis", "descNewsBy5": "Portal de la oposición", "descNewsUa1": "Medio en línea más grande", "descNewsUa2": "Medio independiente", "descNewsUa3": "Noticias en inglés", "descNewsUa4": "Radiodifusión pública", "descNewsDe1": "Emisora internacional", "descNewsDe2": "Revista principal", "descNewsFr1": "Periódico principal", "descNewsFr2": "Medios de investigación", "descNewsUk1": "Periodismo liberal", "descNewsUk2": "Radiodifusora británica", "descNewsUk3": "Agencia internacional", "descNewsUs1": "Investigaciones sin fines de lucro", "descNewsUs2": "Periodismo libre", "descNewsUs3": "Radio pública", "descNewsUs4": "Periódico principal", "descNewsUs5": "Agencia mundial", "descNewsCn1": "Periódico de Hong Kong", "descNewsCn2": "Medios independientes", "descNewsCn3": "Noticias libres", "descNewsIr1": "Noticias independientes", "descNewsIr2": "Noticias sin censura", "descNewsIl1": "Periódico liberal"}};
+    
+    const supported = ["en", "ru", "ar", "zh", "de", "fr", "es"];
+    let currentLang = "ru";
+    let currentContinent = null;
+
+    window.setLanguage = function(lang) {
+        if (!supported.includes(lang)) lang = "ru";
+        currentLang = lang;
+        const dict = langs[lang] || langs["ru"];
+        
+        const elCont = document.getElementById("ui-choose-continent");
+        const elSearch = document.getElementById("ui-search");
+        const elBackCont = document.getElementById("ui-back-continents");
+        const elBackCoun = document.getElementById("ui-back-countries");
+
+        if (elCont) elCont.textContent = dict.chooseCont;
+        if (elSearch) elSearch.textContent = dict.search;
+        if (elBackCont) elBackCont.textContent = dict.backCont;
+        if (elBackCoun) elBackCoun.textContent = dict.backCoun;
+
+        renderSearchEngines();
+        if (currentContinent) {
+            const countriesView = document.getElementById("countries-view");
+            if (countriesView && countriesView.classList.contains("hidden")) {
+                const titleEl = document.getElementById("news-title");
+                if (titleEl) loadNews(titleEl.textContent);
+            } else {
+                loadCountries(currentContinent);
+            }
+        }
+    };
+
+    function renderSearchEngines() {
+        const list = document.getElementById("search-list");
+        if (!list) return;
+        list.innerHTML = "";
+        const dict = langs[currentLang] || langs["ru"];
+        searchEngines.forEach(se => {
+            const li = document.createElement("li");
+            li.className = "list-item";
+            const desc = dict[se.descKey] || se.descKey;
+            li.innerHTML = '<a class="news-link" href="' + se.url + '"><div class="title">' + se.name + '</div><div class="desc">' + desc + '</div></a>';
+            list.appendChild(li);
+        });
+    }
+
+    function init() {
+        renderSearchEngines();
+        const continentsList = document.getElementById("continents-list");
+        if (!continentsList) return;
+        continentsList.innerHTML = "";
+        for (const continent in data) {
+            const li = document.createElement("li");
+            li.className = "list-item";
+            li.innerHTML = '<div class="title">' + continent + '</div><div>→</div>';
+            li.onclick = (function(c) { return function() { loadCountries(c); }; })(continent);
+            continentsList.appendChild(li);
+        }
+    }
+
+    function showContinents() {
+        document.getElementById("continents-view").classList.remove("hidden");
+        document.getElementById("countries-view").classList.add("hidden");
+        document.getElementById("news-view").classList.add("hidden");
+    }
+
+    function loadCountries(continent) {
+        currentContinent = continent;
+        const countriesList = document.getElementById("countries-list");
+        if (!countriesList) return;
+        countriesList.innerHTML = "";
+        document.getElementById("country-title").textContent = continent;
+
+        const countries = data[continent] || {};
+        for (const country in countries) {
+            const li = document.createElement("li");
+            li.className = "list-item";
+            li.innerHTML = '<div class="title">' + country + '</div><div>→</div>';
+            li.onclick = (function(c) { return function() { loadNews(c); }; })(country);
+            countriesList.appendChild(li);
+        }
+        document.getElementById("continents-view").classList.add("hidden");
+        document.getElementById("countries-view").classList.remove("hidden");
+    }
+
+    function showCountries() {
+        document.getElementById("countries-view").classList.remove("hidden");
+        document.getElementById("news-view").classList.add("hidden");
+    }
+
+    function loadNews(country) {
+        const newsList = document.getElementById("news-list");
+        if (!newsList) return;
+        newsList.innerHTML = "";
+        document.getElementById("news-title").textContent = country;
+        
+        let sites = [];
+        if (currentContinent && data[currentContinent] && data[currentContinent][country]) {
+            sites = data[currentContinent][country];
+        }
+        const dict = langs[currentLang] || langs["ru"];
+        const customSites = JSON.parse(localStorage.getItem("custom_sites_" + country) || "[]");
+        
+        sites.forEach(site => {
+            const li = document.createElement("li");
+            li.className = "list-item";
+            const desc = dict[site.descKey] || site.descKey;
+            li.innerHTML = '<a class="news-link" href="' + site.url + '"><div class="title">' + site.name + '</div><div class="desc">' + desc + '</div></a>';
+            newsList.appendChild(li);
+        });
+
+        customSites.forEach(site => {
+            const li = document.createElement("li");
+            li.className = "list-item";
+            li.innerHTML = '<a class="news-link" href="' + site.url + '"><div class="title">' + site.name + '</div><div class="desc">' + dict.customSiteDesc + '</div></a>';
+            newsList.appendChild(li);
+        });
+
+        const btnLi = document.createElement("li");
+        btnLi.className = "list-item";
+        btnLi.style.justifyContent = "center";
+        btnLi.style.backgroundColor = "#333";
+        btnLi.innerHTML = '<div class="title" style="color: #4CAF50;">' + dict.addSite + '</div>';
+        btnLi.onclick = function() { addCustomSite(country); };
+        newsList.appendChild(btnLi);
+        
+        document.getElementById("countries-view").classList.add("hidden");
+        document.getElementById("news-view").classList.remove("hidden");
+    }
+
+    function addCustomSite(country) {
+        const dict = langs[currentLang] || langs["ru"];
+        const name = prompt(dict.promptName);
+        if (!name) return;
+        let url = prompt(dict.promptUrl);
+        if (!url) return;
+        if (!url.startsWith("http")) url = "https://" + url;
+        const customSites = JSON.parse(localStorage.getItem("custom_sites_" + country) || "[]");
+        customSites.push({ name: name, url: url });
+        localStorage.setItem("custom_sites_" + country, JSON.stringify(customSites));
+        loadNews(country);
+    }
+
+    // Run init immediately and on load
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+</script>
+</body>
+</html>
